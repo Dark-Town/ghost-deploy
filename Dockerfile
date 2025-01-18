@@ -1,6 +1,19 @@
-FROM quay.io/zwcoder/ghost-deploy:latest
+FROM node:lts-buster
 
-RUN git clone https://github.com/Dark-Town/GHOST-RIDER /root/GHOST-RIDER
-WORKDIR /root/GHOST-RIDER/
-RUN yarn install --network-concurrency 1
-CMD ["node", "index.js"]
+RUN apt-get update && \
+  apt-get install -y \
+  ffmpeg \
+  imagemagick \
+  webp && \
+  apt-get upgrade -y && \
+  rm -rf /var/lib/apt/lists/*
+
+COPY package.json .
+
+RUN npm install && npm install qrcode-terminal
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "start"]
